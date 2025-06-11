@@ -2,8 +2,8 @@ import { Canvas, FabricImage, Rect } from 'fabric';
 import type { FrameType } from './types';
 
 export const calculateImageDimensions = (imageWidth: number, imageHeight: number) => {
-  const maxDisplayWidth = 400;
-  const maxDisplayHeight = 460;
+  const maxDisplayWidth = 320;
+  const maxDisplayHeight = 380;
   
   const scaleX = maxDisplayWidth / imageWidth;
   const scaleY = maxDisplayHeight / imageHeight;
@@ -167,9 +167,9 @@ export const createFrameRects = (
       }),
       new Rect({
         left: 0,
-        top: framePixels,
+        top: 0,
         width: framePixels,
-        height: canvasHeight - framePixels * 2,
+        height: canvasHeight,
         fill: '#ffffff',
         selectable: false,
         evented: false,
@@ -177,9 +177,9 @@ export const createFrameRects = (
       }),
       new Rect({
         left: canvasWidth - framePixels,
-        top: framePixels,
+        top: 0,
         width: framePixels,
-        height: canvasHeight - framePixels * 2,
+        height: canvasHeight,
         fill: '#ffffff',
         selectable: false,
         evented: false,

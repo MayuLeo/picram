@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 import { clsx } from 'clsx';
 import { IconRadioGroupProps, IconRadioItemProps } from './types';
@@ -18,7 +17,7 @@ const IconRadioItem = ({ className, icon, ref, ...props }: IconRadioItemProps) =
   <RadioGroupPrimitive.Item
     ref={ref}
     className={clsx(
-      'flex items-center justify-center w-9 h-9 bg-white rounded-none border-none outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-[#D0CCD0] data-[state=checked]:text-[#605856]',
+      'flex items-center justify-center w-9 h-9 rounded-none border-none outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-[#D0CCD0] data-[state=checked]:text-[#605856]',
       className
     )}
     {...props}

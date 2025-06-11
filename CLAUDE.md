@@ -9,6 +9,8 @@
 - **ビルド**: `yarn build`
 - **本番サーバー**: `yarn start`
 - **リント**: `yarn lint`
+- **Storybook開発**: `yarn storybook`
+- **Storybookビルド**: `yarn build-storybook`
 
 ## プロジェクト構成
 
@@ -18,6 +20,9 @@
 - **TypeScript**: 厳格な設定でのフルTypeScriptセットアップ  
 - **パッケージマネージャー**: Yarn (注意: yarn.lockを使用、package-lock.jsonではない)
 - **フォント**: next/font/googleからGeist SansとGeist Mono
+- **画像編集**: fabric.js v6.7.0を使用した画像加工機能
+- **コンポーネント開発**: Storybook v9を使用
+- **テスト**: Vitest + Playwright
 
 ## コーディング規約
 - interfaceではなくtypeを使うこと
@@ -54,6 +59,22 @@ ComponentGroup/
 - 各コンポーネントに`index.ts`を作成してエクスポートを管理
 - 複数コンポーネントがある場合のみ、コンポーネント名のディレクトリを作成
 
+## コンポーネント分類
+
+### UIコンポーネント (`src/components/ui/`)
+再利用可能な基本UIコンポーネント：
+- **Button**: プライマリ・デンジャーバリアント対応
+- **Icon**: アイコンコンポーネント群（Frame系アイコン含む）
+- **RadioGroup**: ラジオボタン・アイコンラジオボタン
+- **SelectImage**: 画像選択コンポーネント
+- **Slider**: 値調整用スライダー
+
+### 機能コンポーネント (`src/components/feature/`)
+ビジネスロジックを含む機能的コンポーネント：
+- **ImageEditor**: fabric.jsを使った画像編集の中核コンポーネント
+  - `utils.ts`: fabric.js関連のユーティリティ関数群
+  - 高解像度保持・レスポンシブ表示・枠追加・画像保存機能
+
 ## React 19 記述規約
 
 このプロジェクトではReact 19の最新記述方式を採用します：
@@ -76,10 +97,25 @@ ComponentGroup/
 となります。
 
 PCでも利用したいですが、基本的にはSPからの利用を想定しています。
-現時点での機能
-- 画像に白の枠をつけることができる。
-- 枠は上下or左右or上下左右につけることができる。
-- スライダーを動かすことで白の枠を操作することができる。
+
+## 画像編集機能アーキテクチャ
+
+### 技術スタック
+- **fabric.js**: 高解像度Canvas操作・画像加工
+- **ファイル処理**: FileReader API + Blob/DataURL
+- **レスポンシブ対応**: CSS transform + 動的サイズ調整
+
+### 画像処理フロー
+1. **画像選択**: SelectImageコンポーネントでFile選択
+2. **Canvas初期化**: fabric.js Canvas作成・高解像度設定
+3. **表示最適化**: iPhone SE対応（320×380px最大）
+4. **枠追加**: 水平・垂直・四方向の白枠をリアルタイム生成
+5. **保存**: 元解像度でPNG出力・自動ダウンロード
+
+### 重要な実装ポイント
+- **高解像度保持**: 内部Canvasは元サイズ、表示はCSS変換
+- **fabric.js型定義**: `@types/fabric`使用、型互換性に注意
+- **レスポンシブCanvas**: `setupCanvas`でupper-canvas/lower-canvas両方調整
 
 
 ## 新しいルールの追加プロセス

@@ -1,8 +1,9 @@
+import type { Canvas } from 'fabric';
+
 export type ImageEditorProps = {
   imageFile: File | null;
-  onImageLoad?: (canvas: fabric.Canvas) => void;
+  onImageLoad?: (canvas: Canvas) => void;
   onDelete?: () => void;
-  onSave?: () => void;
 };
 
 export type FrameType = 'horizontal' | 'vertical' | 'all';

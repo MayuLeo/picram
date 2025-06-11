@@ -9,7 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FrameType, ImageEditorProps } from './types';
 import { calculateImageDimensions, setupCanvas, createFrameRects, saveCanvasAsImage } from './utils';
 
-export const ImageEditor = ({ imageFile, onImageLoad, onDelete, onSave }: ImageEditorProps) => {
+export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<Canvas | null>(null);
   const [frameType, setFrameType] = useState<FrameType>('horizontal');
@@ -120,8 +120,6 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete, onSave }: ImageE
       
       saveCanvasAsImage(fabricCanvasRef.current, filename);
     }
-    
-    if (onSave) onSave();
   };
 
   return (

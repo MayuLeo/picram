@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState } from 'react';
-import { SelectImage } from '@/components/ui/SelectImage/SelectImage';
 import { ImageEditor } from '@/components/feature/ImageEditor';
+import { SelectImage } from '@/components/ui/SelectImage/SelectImage';
+import { useState } from 'react';
 
 export default function Home() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -16,24 +16,20 @@ export default function Home() {
     setSelectedImage(null);
   };
 
-  const handleSave = () => {
-    console.log('画像を保存しました');
-  };
 
   return (
-    <div className="min-h-screen bg-[#FBFCFF] flex flex-col items-center gap-16 pt-32 px-6 pb-28">
+    <div className="min-h-screen bg-[#e4e4e4] flex flex-col items-center gap-16 px-6 pb-28">
       {!selectedImage && (
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-sm pt-32">
           <SelectImage onImageSelectAction={handleImageSelect} />
         </div>
       )}
       
       {selectedImage && (
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md pt-4">
           <ImageEditor 
             imageFile={selectedImage} 
             onDelete={handleDelete}
-            onSave={handleSave}
           />
         </div>
       )}

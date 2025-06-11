@@ -1995,6 +1995,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/fabric@npm:^5.3.10":
+  version: 5.3.10
+  resolution: "@types/fabric@npm:5.3.10"
+  checksum: 10c0/5c3a81246202cbce9421afa09c2daf454d514dd2fa4246b1a9bf64d601a008666aa13dde99a9580817df1b81b6b7fa94da8343af91662ac3d96142c8d5a9a7e6
+  languageName: node
+  linkType: hard
+
 "@types/json-schema@npm:^7.0.15":
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
@@ -6271,6 +6278,7 @@ __metadata:
     "@storybook/addon-vitest": "npm:^9.0.8"
     "@storybook/nextjs-vite": "npm:9.0.8"
     "@tailwindcss/postcss": "npm:^4"
+    "@types/fabric": "npm:^5.3.10"
     "@types/node": "npm:^20"
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"

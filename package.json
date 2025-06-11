@@ -27,6 +27,7 @@
     "@storybook/addon-vitest": "^9.0.8",
     "@storybook/nextjs-vite": "9.0.8",
     "@tailwindcss/postcss": "^4",
+    "@types/fabric": "^5.3.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
