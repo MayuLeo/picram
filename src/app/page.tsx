@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { SelectImage } from '@/components/ui/SelectImage/SelectImage';
+import { ImageEditor } from '@/components/feature/ImageEditor';
 
 export default function Home() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -11,11 +12,31 @@ export default function Home() {
     setSelectedImage(file);
   };
 
+  const handleDelete = () => {
+    setSelectedImage(null);
+  };
+
+  const handleSave = () => {
+    console.log('画像を保存しました');
+  };
+
   return (
-    <div className="min-h-screen bg-[#FBFCFF] flex flex-col items-end gap-16 pt-32 px-6 pb-28">
-      <div className="w-full max-w-sm">
-        <SelectImage onImageSelectAction={handleImageSelect} />
-      </div>
+    <div className="min-h-screen bg-[#FBFCFF] flex flex-col items-center gap-16 pt-32 px-6 pb-28">
+      {!selectedImage && (
+        <div className="w-full max-w-sm">
+          <SelectImage onImageSelectAction={handleImageSelect} />
+        </div>
+      )}
+      
+      {selectedImage && (
+        <div className="w-full max-w-md">
+          <ImageEditor 
+            imageFile={selectedImage} 
+            onDelete={handleDelete}
+            onSave={handleSave}
+          />
+        </div>
+      )}
       
       <div className="w-full max-w-sm">
         <div className="flex items-stretch px-2 py-6">
