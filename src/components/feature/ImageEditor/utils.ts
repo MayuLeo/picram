@@ -1,5 +1,5 @@
 import { Canvas, FabricImage, Rect } from 'fabric';
-import type { FrameType } from './types';
+import type { FrameType, FrameColor } from './types';
 
 export const calculateImageDimensions = (imageWidth: number, imageHeight: number) => {
   const maxDisplayWidth = 320;
@@ -64,6 +64,7 @@ export const createFrameRects = (
   canvas: Canvas,
   type: FrameType,
   width: number,
+  color: FrameColor,
   originalImage: FabricImage | null
 ) => {
   if (!originalImage || width === 0) {
@@ -84,6 +85,9 @@ export const createFrameRects = (
   const maxFrameSize = Math.min(canvasWidth, canvasHeight) / 2;
   const framePixels = maxFrameSize * frameWidthPercent;
 
+  // Map color type to hex value
+  const frameColorValue = color === 'white' ? '#ffffff' : '#000000';
+
   // Remove existing frames
   const objects = canvas.getObjects();
   objects.forEach(obj => {
@@ -101,7 +105,7 @@ export const createFrameRects = (
       top: 0,
       width: canvasWidth,
       height: framePixels,
-      fill: '#ffffff',
+      fill: frameColorValue,
       selectable: false,
       evented: false,
       isFrame: true,
@@ -113,7 +117,7 @@ export const createFrameRects = (
       top: canvasHeight - framePixels,
       width: canvasWidth,
       height: framePixels,
-      fill: '#ffffff',
+      fill: frameColorValue,
       selectable: false,
       evented: false,
       isFrame: true,
@@ -125,7 +129,7 @@ export const createFrameRects = (
       top: 0,
       width: framePixels,
       height: canvasHeight,
-      fill: '#ffffff',
+      fill: frameColorValue,
       selectable: false,
       evented: false,
       isFrame: true,
@@ -137,7 +141,7 @@ export const createFrameRects = (
       top: 0,
       width: framePixels,
       height: canvasHeight,
-      fill: '#ffffff',
+      fill: frameColorValue,
       selectable: false,
       evented: false,
       isFrame: true,
@@ -150,7 +154,7 @@ export const createFrameRects = (
         top: 0,
         width: canvasWidth,
         height: framePixels,
-        fill: '#ffffff',
+        fill: frameColorValue,
         selectable: false,
         evented: false,
         isFrame: true,
@@ -160,7 +164,7 @@ export const createFrameRects = (
         top: canvasHeight - framePixels,
         width: canvasWidth,
         height: framePixels,
-        fill: '#ffffff',
+        fill: frameColorValue,
         selectable: false,
         evented: false,
         isFrame: true,
@@ -170,7 +174,7 @@ export const createFrameRects = (
         top: 0,
         width: framePixels,
         height: canvasHeight,
-        fill: '#ffffff',
+        fill: frameColorValue,
         selectable: false,
         evented: false,
         isFrame: true,
@@ -180,7 +184,7 @@ export const createFrameRects = (
         top: 0,
         width: framePixels,
         height: canvasHeight,
-        fill: '#ffffff',
+        fill: frameColorValue,
         selectable: false,
         evented: false,
         isFrame: true,

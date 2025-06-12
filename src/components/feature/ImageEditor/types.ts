@@ -7,3 +7,5 @@ export type ImageEditorProps = {
 };
 
 export type FrameType = 'horizontal' | 'vertical' | 'all';
+
+export type FrameColor = 'white' | 'black';
