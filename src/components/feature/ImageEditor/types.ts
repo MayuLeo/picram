@@ -9,3 +9,24 @@ export type ImageEditorProps = {
 export type FrameType = 'horizontal' | 'vertical' | 'all';
 
 export type FrameColor = 'white' | 'black';
+
+export type EditMode = 'frame' | 'trimming';
+
+export type CropData = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+export type FrameData = {
+  type: FrameType;
+  width: number;
+  color: FrameColor;
+};
+
+export type EditHistory = {
+  crop?: CropData;
+  frame?: FrameData;
+};
+

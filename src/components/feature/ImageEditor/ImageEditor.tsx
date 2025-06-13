@@ -6,10 +6,10 @@ import { IconRadioGroup, IconRadioItem } from '@/components/ui/RadioGroup/IconRa
 import { RadioGroup } from '@/components/ui/RadioGroup/RadioGroup';
 import { Slider } from '@/components/ui/Slider';
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
-import { Canvas, FabricImage } from 'fabric';
+import { Canvas, FabricImage, Rect } from 'fabric';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { FrameColor, FrameType, ImageEditorProps } from './types';
-import { calculateImageDimensions, createFrameRects, saveCanvasAsImage, setupCanvas } from './utils';
+import type { FrameColor, FrameType, ImageEditorProps, EditHistory } from './types';
+import { calculateImageDimensions, createFrameRects, processImageWithHistory, setupCanvas } from './utils';
 
 export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,6 +18,11 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
   const [frameWidth, setFrameWidth] = useState<number>(0);
   const [frameColor, setFrameColor] = useState<FrameColor>('white');
   const [originalImage, setOriginalImage] = useState<FabricImage | null>(null);
+  const [isTrimmingMode, setIsTrimmingMode] = useState<boolean>(false);
+  const [selectionRect, setSelectionRect] = useState<Rect | null>(null);
+  const [imageDimensions, setImageDimensions] = useState<ReturnType<typeof calculateImageDimensions> | null>(null);
+  const [editHistory, setEditHistory] = useState<EditHistory>({});
+  const [originalImageDataURL, setOriginalImageDataURL] = useState<string>('');
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -53,6 +58,7 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
 
     reader.onload = (e) => {
       const imageUrl = e.target?.result as string;
+      setOriginalImageDataURL(imageUrl); // Store original image data for on-demand processing
       
       FabricImage.fromURL(imageUrl).then((fabricImage) => {
         // Clear canvas safely
@@ -68,6 +74,7 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
         
         // Calculate dimensions
         const dimensions = calculateImageDimensions(imageWidth, imageHeight);
+        setImageDimensions(dimensions);
         
         // Setup canvas
         setupCanvas(canvas, canvasElement, dimensions);
@@ -84,6 +91,9 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
         canvas.add(fabricImage);
         setOriginalImage(fabricImage);
         canvas.renderAll();
+        
+        // Reset edit history when new image is loaded
+        setEditHistory({});
         
         // Call callback if provided
         if (onImageLoad) {
@@ -103,6 +113,12 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
   useEffect(() => {
     if (fabricCanvasRef.current && originalImage) {
       createFrame(fabricCanvasRef.current, frameType, frameWidth, frameColor);
+      
+      // Update edit history for frame
+      setEditHistory(prev => ({
+        ...prev,
+        frame: frameWidth > 0 ? { type: frameType, width: frameWidth, color: frameColor } : undefined
+      }));
     }
   }, [frameWidth, frameType, frameColor, originalImage, createFrame]);
 
@@ -114,18 +130,125 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
     setFrameColor(value as FrameColor);
   };
 
+  const startCrop = () => {
+    if (!fabricCanvasRef.current || !originalImage) return;
+    
+    setIsTrimmingMode(true);
+    
+    const canvas = fabricCanvasRef.current;
+    const canvasWidth = canvas.getWidth();
+    const canvasHeight = canvas.getHeight();
+    
+    // Calculate initial crop size - use a good portion of the canvas/image
+    const cropWidth = Math.min(canvasWidth * 0.7, canvasHeight * 0.7);
+    const cropHeight = cropWidth; // 正方形を基本とする
+    
+    const cropRect = new Rect({
+      fill: 'rgba(0,0,0,0.3)',
+      originX: 'left',
+      originY: 'top',
+      stroke: 'black',
+      opacity: 1,
+      width: cropWidth,
+      height: cropHeight,
+      hasRotatingPoint: false,
+      transparentCorners: false,
+      cornerColor: 'white',
+      cornerStrokeColor: 'black',
+      borderColor: 'black',
+      cornerSize: 120, // ハンドルサイズを大きく（12→24）
+      padding: 0,
+      cornerStyle: 'circle',
+      borderDashArray: [5, 5],
+      borderScaleFactor: 1.3,
+      // タッチ操作でも使いやすくするための設定
+      touchCornerSize: 120, // タッチ時はさらに大きく
+    });
+    
+    canvas.centerObject(cropRect);
+    canvas.add(cropRect);
+    canvas.setActiveObject(cropRect);
+    canvas.renderAll();
+    
+    setSelectionRect(cropRect);
+  };
+  
+  const applyCrop = () => {
+    if (!fabricCanvasRef.current || !originalImage || !selectionRect || !imageDimensions) {
+      return;
+    }
+    
+    const canvas = fabricCanvasRef.current;
+    
+    // Store crop data in edit history instead of immediately processing
+    const cropX = selectionRect.left!;
+    const cropY = selectionRect.top!;
+    const cropWidth = selectionRect.getScaledWidth();
+    const cropHeight = selectionRect.getScaledHeight();
+    
+    // Update edit history with crop data
+    setEditHistory(prev => ({
+      ...prev,
+      crop: {
+        x: cropX,
+        y: cropY,
+        width: cropWidth,
+        height: cropHeight
+      }
+    }));
+    
+    // Remove the selection rectangle
+    canvas.remove(selectionRect);
+    
+    // Update canvas display size to show cropped area
+    canvas.setDimensions({
+      width: cropWidth,
+      height: cropHeight
+    });
+    
+    // Adjust display positioning for visual feedback
+    const dimensions = calculateImageDimensions(cropWidth, cropHeight);
+    setImageDimensions(dimensions);
+    setupCanvas(canvas, canvas.getElement(), dimensions);
+    
+    // Clear canvas and redraw only the cropped area for preview
+    canvas.clear();
+    
+    // Create a preview of the cropped area
+    FabricImage.fromURL(originalImageDataURL).then((previewImage) => {
+      previewImage.set({
+        left: -cropX,
+        top: -cropY,
+        selectable: false,
+        evented: false,
+      });
+      
+      canvas.add(previewImage);
+      canvas.renderAll();
+      setOriginalImage(previewImage);
+    });
+    
+    setIsTrimmingMode(false);
+    setSelectionRect(null);
+  };
+
   const handleDelete = () => {
     if (onDelete) onDelete();
   };
 
-  const handleSave = () => {
-    if (fabricCanvasRef.current) {
-      // Generate filename based on original file name
+  const handleSave = async () => {
+    if (!originalImageDataURL) return;
+    
+    try {
+      // Generate filename based on original file name and format
       const originalName = imageFile?.name || 'image';
       const nameWithoutExt = originalName.replace(/\.[^/.]+$/, '');
-      const filename = `${nameWithoutExt}-edited.png`;
+      const filename = `${nameWithoutExt}-edited.jpg`;
       
-      saveCanvasAsImage(fabricCanvasRef.current, filename);
+      // Use on-demand processing with edit history
+      await processImageWithHistory(originalImageDataURL, editHistory, filename);
+    } catch (error) {
+      console.error('Failed to save image:', error);
     }
   };
 
@@ -149,7 +272,32 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
         />
       </div>
 
-      {/* IconRadioGroup */}
+      {/* Trimming Controls */}
+      {isTrimmingMode ? (
+        <div className="w-full flex justify-center gap-4">
+          <Button onClick={() => { 
+            setIsTrimmingMode(false); 
+            if (selectionRect && fabricCanvasRef.current) {
+              fabricCanvasRef.current.remove(selectionRect);
+            }
+          }}>
+            キャンセル
+          </Button>
+          <Button variant="primary" onClick={applyCrop}>
+            トリミング
+          </Button>
+        </div>
+      ) : (
+        <div className="w-full flex justify-center">
+          <Button onClick={startCrop}>
+            トリミング開始
+          </Button>
+        </div>
+      )}
+
+      {!isTrimmingMode && (
+        <>
+          {/* IconRadioGroup */}
       <div className="w-full">
         <IconRadioGroup value={frameType} onValueChange={handleFrameTypeChange}>
           <IconRadioItem value="horizontal" icon={<IconHorizontalFrame />} />
@@ -194,16 +342,18 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
         </RadioGroup>
       </div>
 
-      {/* Slider */}
-      <div className="w-full">
-        <Slider
-          value={[frameWidth]}
-          onValueChange={(value) => setFrameWidth(value[0])}
-          max={100}
-          min={0}
-          step={1}
-        />
-      </div>
+          {/* Slider */}
+          <div className="w-full">
+            <Slider
+              value={[frameWidth]}
+              onValueChange={(value) => setFrameWidth(value[0])}
+              max={100}
+              min={0}
+              step={1}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

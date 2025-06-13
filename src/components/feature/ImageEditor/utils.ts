@@ -1,5 +1,5 @@
 import { Canvas, FabricImage, Rect } from 'fabric';
-import type { FrameType, FrameColor } from './types';
+import type { FrameColor, FrameType } from './types';
 
 export const calculateImageDimensions = (imageWidth: number, imageHeight: number) => {
   const maxDisplayWidth = 320;
@@ -197,20 +197,117 @@ export const createFrameRects = (
 };
 
 export const saveCanvasAsImage = (canvas: Canvas, filename?: string) => {
-  // Get canvas as data URL (high resolution)
+  // Get canvas as data URL in JPEG format for smaller file size
   const dataURL = canvas.toDataURL({
-    format: 'png',
-    quality: 1.0,
-    multiplier: 1, // Use original resolution
+    format: 'jpeg',
+    quality: 0.85, // 85% quality for good balance of size and quality
+    multiplier: 1, // Use 1x to avoid excessive file size
   });
 
   // Create download link
   const link = document.createElement('a');
-  link.download = filename || `edited-image-${Date.now()}.png`;
+  link.download = filename || `edited-image-${Date.now()}.jpg`;
   link.href = dataURL;
   
   // Trigger download
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+};
+
+// On-demand processing function that applies edit history to original image
+export const processImageWithHistory = async (
+  originalImageDataURL: string,
+  editHistory: import('./types').EditHistory,
+  filename?: string
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = function() {
+      // Create temporary canvas for processing
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      if (!tempCtx) {
+        reject(new Error('Failed to get canvas context'));
+        return;
+      }
+
+      // Determine final canvas size based on crop history
+      let finalWidth = img.width;
+      let finalHeight = img.height;
+      let sourceX = 0;
+      let sourceY = 0;
+      let sourceWidth = img.width;
+      let sourceHeight = img.height;
+
+      if (editHistory.crop) {
+        finalWidth = editHistory.crop.width;
+        finalHeight = editHistory.crop.height;
+        sourceX = editHistory.crop.x;
+        sourceY = editHistory.crop.y;
+        sourceWidth = editHistory.crop.width;
+        sourceHeight = editHistory.crop.height;
+      }
+
+      tempCanvas.width = finalWidth;
+      tempCanvas.height = finalHeight;
+
+      // Draw cropped image
+      tempCtx.drawImage(
+        img,
+        sourceX, sourceY, sourceWidth, sourceHeight,
+        0, 0, finalWidth, finalHeight
+      );
+
+      // Apply frame if present
+      if (editHistory.frame && editHistory.frame.width > 0) {
+        const frameWidthPercent = editHistory.frame.width / 100;
+        const maxFrameSize = Math.min(finalWidth, finalHeight) / 2;
+        const framePixels = maxFrameSize * frameWidthPercent;
+        const frameColor = editHistory.frame.color === 'white' ? '#ffffff' : '#000000';
+
+        tempCtx.fillStyle = frameColor;
+
+        if (editHistory.frame.type === 'horizontal') {
+          // Top frame
+          tempCtx.fillRect(0, 0, finalWidth, framePixels);
+          // Bottom frame
+          tempCtx.fillRect(0, finalHeight - framePixels, finalWidth, framePixels);
+        } else if (editHistory.frame.type === 'vertical') {
+          // Left frame
+          tempCtx.fillRect(0, 0, framePixels, finalHeight);
+          // Right frame
+          tempCtx.fillRect(finalWidth - framePixels, 0, framePixels, finalHeight);
+        } else if (editHistory.frame.type === 'all') {
+          // All four sides
+          tempCtx.fillRect(0, 0, finalWidth, framePixels); // Top
+          tempCtx.fillRect(0, finalHeight - framePixels, finalWidth, framePixels); // Bottom
+          tempCtx.fillRect(0, 0, framePixels, finalHeight); // Left
+          tempCtx.fillRect(finalWidth - framePixels, 0, framePixels, finalHeight); // Right
+        }
+      }
+
+      // Get final image data in JPEG format
+      const finalDataURL = tempCanvas.toDataURL('image/jpeg', 0.85);
+
+      // Create download link
+      const link = document.createElement('a');
+      link.download = filename || `edited-image-${Date.now()}.jpg`;
+      link.href = finalDataURL;
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up
+      tempCanvas.width = 0;
+      tempCanvas.height = 0;
+
+      resolve();
+    };
+
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = originalImageDataURL;
+  });
 };
