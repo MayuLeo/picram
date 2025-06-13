@@ -12,6 +12,8 @@ export type FrameColor = 'white' | 'black';
 
 export type EditMode = 'frame' | 'trimming';
 
+export type AspectRatio = '1:1' | '16:9' | '5:4' | '7:5';
+
 export type CropData = {
   x: number;
   y: number;
