@@ -26,7 +26,7 @@ export const FrameControls = ({
   };
 
   return (
-    <>
+    <div className="w-full space-y-4">
       {/* Frame Type Selection */}
       <div className="w-full">
         <IconRadioGroup value={frameType} onValueChange={handleFrameTypeChange}>
@@ -39,7 +39,7 @@ export const FrameControls = ({
       {/* Frame Color Selection */}
       <div className="w-full">
         <RadioGroup value={frameColor} onValueChange={handleFrameColorChange}>
-          <div className="flex justify-center gap-8">
+          <div className="flex justify-center gap-6">
             <div className="flex items-center space-x-2">
               <RadioGroupPrimitive.Item
                 value="white"
@@ -73,7 +73,11 @@ export const FrameControls = ({
       </div>
 
       {/* Frame Width Slider */}
-      <div className="w-full">
+      <div className="w-full space-y-2">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-medium text-gray-700">枠の幅</span>
+          <span className="text-sm text-gray-500">{frameWidth}%</span>
+        </div>
         <Slider
           value={[frameWidth]}
           onValueChange={handleFrameWidthChange}
@@ -82,6 +86,6 @@ export const FrameControls = ({
           step={1}
         />
       </div>
-    </>
+    </div>
   );
 };

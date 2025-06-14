@@ -21,7 +21,6 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
     originalImage,
     originalImageDataURL,
     setOriginalImage,
-    setImageDimensions,
   } = useCanvasSetup(imageFile, onImageLoad);
 
   // Frame editor hook
@@ -47,9 +46,15 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
     fabricCanvasRef,
     originalImage,
     originalImageDataURL,
-    setImageDimensions,
     setOriginalImage
   );
+
+  // Reset edit history when new image is loaded
+  useEffect(() => {
+    if (imageFile) {
+      setEditHistory({});
+    }
+  }, [imageFile]);
 
   // Update edit history when frame changes
   useEffect(() => {
@@ -104,7 +109,7 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
   };
 
   return (
-    <div className="w-full flex flex-col items-end gap-16">
+    <div className="w-full flex flex-col items-end gap-6">
       {/* Buttons */}
       <div className="w-full flex justify-between items-center px-4">
         <Button variant="danger" onClick={handleDelete}>
@@ -117,7 +122,15 @@ export const ImageEditor = ({ imageFile, onImageLoad, onDelete }: ImageEditorPro
 
       {/* Canvas */}
       <div className="w-full flex justify-center">
-        <canvas ref={canvasRef} />
+        <canvas 
+          ref={canvasRef} 
+          style={{ 
+            display: 'block', 
+            visibility: 'visible',
+            maxWidth: '100%',
+            height: 'auto' 
+          }} 
+        />
       </div>
 
       {/* Trimming Controls */}

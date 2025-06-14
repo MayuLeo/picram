@@ -15,7 +15,6 @@ export default function Home() {
     setSelectedImage(null);
   };
 
-
   return (
     <div className="min-h-screen bg-[#e4e4e4] flex flex-col items-center gap-16 px-6 pb-28">
       {!selectedImage && (
@@ -32,14 +31,6 @@ export default function Home() {
           />
         </div>
       )}
-      
-      <div className="w-full max-w-sm">
-        <div className="flex items-stretch px-2 py-6">
-          <p className="text-black font-bold text-xs leading-[1.36] w-full h-[27px] flex items-center">
-            写真に枠をつけることのできるサービスです
-          </p>
-        </div>
-      </div>
     </div>
   );
 }

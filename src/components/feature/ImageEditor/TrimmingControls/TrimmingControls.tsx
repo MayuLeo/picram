@@ -14,12 +14,12 @@ export const TrimmingControls = ({
   };
 
   return (
-    <>
+    <div className="w-full space-y-4">
       {/* Aspect Ratio Selection */}
       <div className="w-full">
         <RadioGroup value={aspectRatio} onValueChange={handleAspectRatioChange}>
-          <div className="flex justify-center gap-4">
-            <div className="flex items-center space-x-2">
+          <div className="flex justify-center gap-3">
+            <div className="flex items-center space-x-1">
               <RadioGroupPrimitive.Item
                 value="1:1"
                 id="1:1"
@@ -33,7 +33,7 @@ export const TrimmingControls = ({
                 1:1
               </label>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
               <RadioGroupPrimitive.Item
                 value="16:9"
                 id="16:9"
@@ -47,7 +47,7 @@ export const TrimmingControls = ({
                 16:9
               </label>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
               <RadioGroupPrimitive.Item
                 value="5:4"
                 id="5:4"
@@ -61,7 +61,7 @@ export const TrimmingControls = ({
                 5:4
               </label>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
               <RadioGroupPrimitive.Item
                 value="7:5"
                 id="7:5"
@@ -88,6 +88,6 @@ export const TrimmingControls = ({
           トリミング
         </Button>
       </div>
-    </>
+    </div>
   );
 };
