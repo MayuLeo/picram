@@ -18,8 +18,35 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#e4e4e4] flex flex-col items-center gap-16 px-6 pb-28">
       {!selectedImage && (
-        <div className="w-full max-w-sm pt-32">
+        <div className="w-full max-w-sm pt-32 flex flex-col items-center gap-8">
           <SelectImage onImageSelectAction={handleImageSelect} />
+          
+          {/* アプリの説明 */}
+          <div className="w-full text-center space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h2 className="text-lg font-semibold text-blue-900 mb-3">
+                Picram について
+              </h2>
+              <div className="text-sm text-blue-800 space-y-3 text-left">
+                <p>
+                  <span className="font-medium">📱 簡単画像編集</span><br />
+                  スマートフォンでも使いやすい直感的な操作で、画像のトリミングやフレーム追加ができます。
+                </p>
+                <p>
+                  <span className="font-medium">🔒 プライバシー保護</span><br />
+                  画像はすべてお使いの端末内で処理され、インターネットに送信されることはありません。
+                </p>
+                <p>
+                  <span className="font-medium">⚡ 高速処理</span><br />
+                  ブラウザ上で動作するため、アプリのダウンロードやアカウント登録は不要です。
+                </p>
+              </div>
+            </div>
+            
+            <div className="text-xs text-gray-500">
+              対応形式：JPEG、PNG、WebP
+            </div>
+          </div>
         </div>
       )}
       
