@@ -16,9 +16,9 @@ export const metadata: Metadata = {
   title: "Picram - 画像編集アプリ",
   description: "簡単に画像をトリミング・フレーム追加できるWebアプリケーション。スマートフォン対応で直感的な操作が可能です。",
   keywords: ["画像編集", "トリミング", "フレーム", "写真加工", "Web アプリ", "スマートフォン対応"],
-  authors: [{ name: "Picram" }],
-  creator: "Picram",
-  publisher: "Picram",
+  authors: [{ name: "MayuLeo" }],
+  creator: "MayuLeo",
+  publisher: "MayuLeo",
   robots: "index, follow",
   openGraph: {
     title: "Picram - 画像編集アプリ",

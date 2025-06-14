@@ -116,6 +116,9 @@ export const useTrimmingEditor = (
       width: cropWidth,
       height: cropHeight,
       hasRotatingPoint: false,
+      lockRotation: true,
+      hasControls: true,
+      hasBorders: true,
       transparentCorners: false,
       cornerColor: 'white',
       cornerStrokeColor: 'black',
@@ -135,6 +138,9 @@ export const useTrimmingEditor = (
     canvas.centerObject(cropRect);
     canvas.add(cropRect);
     canvas.setActiveObject(cropRect);
+    
+    // Hide rotation control completely
+    cropRect.setControlVisible('mtr', false);
     
     // Add boundary constraints
     cropRect.on('moving', () => {
