@@ -23,21 +23,21 @@ export default function Home() {
           
           {/* アプリの説明 */}
           <div className="w-full text-center space-y-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h2 className="text-lg font-semibold text-blue-900 mb-3">
+            <div className="border border-gray-200 rounded-lg p-5">
+              <h2 className="text-base font-medium text-gray-800 mb-4">
                 Picram について
               </h2>
-              <div className="text-sm text-blue-800 space-y-3 text-left">
+              <div className="text-sm text-gray-600 space-y-2 text-left">
                 <p>
-                  <span className="font-medium">📱 簡単画像編集</span><br />
+                  <span className="font-medium text-gray-700">📱 簡単画像編集</span><br />
                   スマートフォンでも使いやすい直感的な操作で、画像のトリミングやフレーム追加ができます。
                 </p>
                 <p>
-                  <span className="font-medium">🔒 プライバシー保護</span><br />
+                  <span className="font-medium text-gray-700">🔒 プライバシー保護</span><br />
                   画像はすべてお使いの端末内で処理され、インターネットに送信されることはありません。
                 </p>
                 <p>
-                  <span className="font-medium">⚡ 高速処理</span><br />
+                  <span className="font-medium text-gray-700">⚡ 高速処理</span><br />
                   ブラウザ上で動作するため、アプリのダウンロードやアカウント登録は不要です。
                 </p>
               </div>
